@@ -9,54 +9,59 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
-      --bg: #0d0f14;
-      --card-bg: #141721;
-      --card-inner: #191d2a;
+      --bg: #0b0e14;
+      --card-bg: #121620;
+      --card-inner: #181e2b;
       --border: rgba(255, 255, 255, 0.08);
       --yellow: #f5b300;
       --yellow-btn: #f5a623;
       --text: #ffffff;
       --text-muted: #6e798f;
-      --green: #2ecc71;
-      --red: #e74c3c;
+      --green: #22c55e;
+      --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 84px; overflow-x: hidden; }
 
+    /* ШАПКА */
     .top-bar {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 16px; background: rgba(13, 15, 20, 0.95);
-      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+      padding: 12px 16px; background: rgba(11, 14, 20, 0.95);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
     }
     .profile-pill { display: flex; align-items: center; gap: 10px; }
     .avatar-circle {
-      width: 36px; height: 36px; border-radius: 50%; background: #28334e;
+      width: 38px; height: 38px; border-radius: 50%; background: #28334e;
       display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
     .names-col { display: flex; flex-direction: column; }
     .display-name { font-size: 13px; font-weight: 700; }
     .display-tag { font-size: 11px; color: var(--text-muted); }
     .stars-pill {
-      background: #1c2230; border: 1px solid rgba(245, 179, 0, 0.3);
+      background: #171d2a; border: 1px solid rgba(245, 179, 0, 0.35);
       padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px; color: var(--yellow);
       display: flex; align-items: center; gap: 6px;
     }
 
+    /* ЭКРАНЫ */
     .screen { display: none; padding: 14px; }
     .screen.active { display: block; }
 
+    /* LIVE-ДРОПЫ */
     .live-strip {
-      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none;
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 12px; scrollbar-width: none;
     }
     .live-card {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
       padding: 6px 10px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 11px; font-weight: 700;
     }
-    .live-card .mini-art { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .live-card .mini-art { width: 28px; height: 28px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 
+    /* РАДАР */
     .radar-wrapper {
-      position: relative; width: 220px; height: 220px; margin: 0 auto 16px;
+      position: relative; width: 220px; height: 220px; margin: 4px auto 16px;
       display: flex; align-items: center; justify-content: center;
     }
     .radar-svg { width: 100%; height: 100%; transform: rotate(90deg); }
@@ -64,13 +69,13 @@
     .radar-progress {
       fill: none; stroke-width: 8; stroke-linecap: round;
       stroke-dasharray: 565; stroke-dashoffset: 565;
-      transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+      transition: stroke-dashoffset 0.35s ease, stroke 0.35s ease;
     }
     .radar-center-text {
       position: absolute; text-align: center; display: flex; flex-direction: column; align-items: center; pointer-events: none;
     }
     .chance-digits { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-    .chance-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+    .chance-sub { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 3px; }
 
     .radar-mark { position: absolute; font-size: 10px; font-weight: 700; color: #566176; }
     .mark-0 { bottom: -6px; }
@@ -88,21 +93,23 @@
       border-radius: 3px; box-shadow: 0 0 10px var(--yellow);
     }
 
+    /* СЛОТЫ */
     .slots-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
     .slot {
-      background: var(--card-bg); border: 1.5px dashed var(--border); border-radius: 18px;
-      min-height: 140px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: var(--card-bg); border: 1.5px dashed var(--border); border-radius: 20px;
+      min-height: 148px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center; cursor: pointer; position: relative;
     }
     .slot.active-slot { border-style: solid; border-color: rgba(245, 179, 0, 0.4); background: var(--card-inner); }
-    .slot-art-box {
-      width: 70px; height: 70px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 6px; position: relative; font-size: 32px;
+    .nft-canvas {
+      width: 74px; height: 74px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 6px; position: relative; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
     }
     .slot-title { font-size: 12px; font-weight: 700; }
-    .slot-meta { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .slot-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .slot-val { font-size: 12px; font-weight: 800; color: var(--yellow); margin-top: 4px; }
 
+    /* ПРЕСЕТЫ */
     .presets-row { display: flex; gap: 6px; margin-bottom: 16px; }
     .preset-btn {
       flex: 1; background: var(--card-bg); border: 1px solid var(--border);
@@ -114,48 +121,51 @@
     }
 
     .btn-boost-main {
-      width: 100%; background: var(--yellow-btn); border: none; padding: 15px; border-radius: 16px;
-      font-size: 16px; font-weight: 800; color: #161205; cursor: pointer; letter-spacing: 0.5px;
-      box-shadow: 0 4px 18px rgba(245, 166, 35, 0.35); text-transform: uppercase;
+      width: 100%; background: var(--yellow-btn); border: none; padding: 15px; border-radius: 18px;
+      font-size: 15px; font-weight: 800; color: #161205; cursor: pointer; letter-spacing: 0.5px;
+      box-shadow: 0 4px 20px rgba(245, 166, 35, 0.35); text-transform: uppercase;
     }
     .btn-boost-main:disabled { opacity: 0.35; box-shadow: none; }
 
+    /* ШТОРКА (Bottom Sheet) */
     .sheet-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200;
-      display: none; align-items: flex-end;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200;
+      display: none; align-items: flex-end; backdrop-filter: blur(8px);
     }
     .sheet-box {
-      background: #11141c; border-top: 1px solid var(--border); border-radius: 24px 24px 0 0;
-      width: 100%; max-height: 80vh; overflow-y: auto; padding: 18px 16px 30px;
+      background: #11151f; border-top: 1px solid var(--border); border-radius: 24px 24px 0 0;
+      width: 100%; max-height: 80vh; overflow-y: auto; padding: 18px 16px 34px;
     }
     .sheet-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
     .sheet-tab-btn {
-      flex: 1; padding: 10px; border-radius: 12px; background: #191e2b; border: none;
+      flex: 1; padding: 10px; border-radius: 12px; background: #191f2c; border: none;
       color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer;
     }
     .sheet-tab-btn.active { background: var(--yellow); color: #000; }
     .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
+    /* ПОБЕДНЫЙ POPUP */
     .win-modal {
-      position: fixed; inset: 0; background: rgba(5, 7, 10, 0.92); z-index: 300;
+      position: fixed; inset: 0; background: rgba(5, 7, 10, 0.94); z-index: 300;
       display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
     }
     .win-glow {
-      position: absolute; width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(245, 179, 0, 0.4) 0%, transparent 70%);
+      position: absolute; width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(245, 179, 0, 0.45) 0%, transparent 70%);
       pointer-events: none; animation: pulseGlow 2s infinite alternate;
     }
-    @keyframes pulseGlow { 0% { transform: scale(0.9); opacity: 0.6; } 100% { transform: scale(1.15); opacity: 1; } }
+    @keyframes pulseGlow { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.18); opacity: 1; } }
     .win-card {
       background: var(--card-bg); border: 2px solid var(--yellow); border-radius: 24px;
       padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center;
-      position: relative; z-index: 2; width: 100%; max-width: 310px;
+      position: relative; z-index: 2; width: 100%; max-width: 310px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
-    .win-card-art { width: 110px; height: 110px; border-radius: 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 52px; }
+    .win-card .nft-canvas { width: 120px; height: 120px; border-radius: 20px; margin-bottom: 12px; }
 
+    /* НАВИГАЦИЯ */
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0; height: 68px;
-      background: #11141c; border-top: 1px solid var(--border); display: flex; z-index: 90;
+      background: #10131c; border-top: 1px solid var(--border); display: flex; z-index: 90;
     }
     .nav-item {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -164,12 +174,13 @@
     .nav-item.active { color: var(--yellow); }
     .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
 
+    /* АДМИН-ПАНЕЛЬ */
     .admin-zone {
-      background: #161a26; border: 1px solid #7c3aed; border-radius: 18px; padding: 16px; margin-bottom: 16px;
+      background: #151825; border: 1px solid #7c3aed; border-radius: 20px; padding: 16px; margin-bottom: 16px;
     }
     .admin-inp {
-      width: 100%; background: #1f2536; border: 1px solid var(--border);
-      padding: 10px; border-radius: 10px; color: #fff; font-size: 13px; margin-bottom: 8px; outline: none;
+      width: 100%; background: #1e2436; border: 1px solid var(--border);
+      padding: 11px; border-radius: 12px; color: #fff; font-size: 13px; margin-bottom: 8px; outline: none;
     }
     .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   </style>
@@ -190,49 +201,41 @@
     </div>
   </header>
 
-  <div id="reg-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;">
-    <div style="background:#161922;border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center;">
+  <!-- ОКНО РЕГИСТРАЦИИ -->
+  <div id="reg-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;">
+    <div style="background:#141824;border:1px solid var(--border);border-radius:24px;padding:26px;width:100%;max-width:320px;text-align:center;">
       <h3 style="margin-bottom:6px;font-size:18px;">Регистрация</h3>
-      <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">Займи никнейм во всей сети симулятора</p>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">Займи юзернейм в единой базе симулятора</p>
       <input type="text" id="reg-name" class="admin-inp" placeholder="Твое имя">
-      <input type="text" id="reg-user" class="admin-inp" placeholder="Юзернейм (например, boss)">
-      <button class="btn-boost-main" style="padding:12px;font-size:14px;" onclick="registerUser()">Начать</button>
+      <input type="text" id="reg-user" class="admin-inp" placeholder="Юзернейм (например, durov)">
+      <button class="btn-boost-main" style="padding:12px;font-size:14px;" onclick="registerUser()">Начать играть</button>
     </div>
   </div>
 
+  <!-- ЭКРАН 1: КЕЙСЫ -->
   <section id="screen-cases" class="screen">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div class="slot active-slot" style="min-height:160px;">
-        <div class="slot-art-box" style="background: radial-gradient(circle, #3d2c16 0%, #151821 80%);">🎁</div>
-        <div class="slot-title">Обычный кейс</div>
+        <div class="nft-canvas" id="case-box-1" style="background: radial-gradient(circle, #3d2c16 0%, #151821 80%);"></div>
+        <div class="slot-title">Standard Box</div>
         <div class="slot-val">50 ⭐</div>
         <button class="btn-boost-main" style="padding:8px;font-size:12px;margin-top:8px;" onclick="openCase('common', 50)">Открыть</button>
       </div>
       <div class="slot active-slot" style="min-height:160px;">
-        <div class="slot-art-box" style="background: radial-gradient(circle, #10344d 0%, #151821 80%);">💎</div>
-        <div class="slot-title">VIP NFT кейс</div>
+        <div class="nft-canvas" id="case-box-2" style="background: radial-gradient(circle, #10344d 0%, #151821 80%);"></div>
+        <div class="slot-title">VIP Cyber Box</div>
         <div class="slot-val">350 ⭐</div>
         <button class="btn-boost-main" style="padding:8px;font-size:12px;margin-top:8px;" onclick="openCase('rare', 350)">Открыть</button>
       </div>
     </div>
   </section>
 
+  <!-- ЭКРАН 2: АПГРЕЙД -->
   <section id="screen-upgrade" class="screen active">
-    <div class="live-strip">
-      <div class="live-card">
-        <div class="mini-art" style="background:#0284c7;">🐶</div>
-        <div><span>0.82%</span> <b style="color:var(--yellow);">1,200 ⭐</b></div>
-      </div>
-      <div class="live-card">
-        <div class="mini-art" style="background:#be123c;">📦</div>
-        <div><span>55%</span> <b style="color:var(--yellow);">85 ⭐</b></div>
-      </div>
-      <div class="live-card">
-        <div class="mini-art" style="background:#16a34a;">🐸</div>
-        <div><span>12%</span> <b style="color:var(--yellow);">450 ⭐</b></div>
-      </div>
-    </div>
+    <!-- Live лента дропов -->
+    <div class="live-strip" id="live-drops-bar"></div>
 
+    <!-- SVG РАДАР С ДИНАМИЧЕСКИМ СЕКТОРОМ -->
     <div class="radar-wrapper">
       <svg class="radar-svg" viewBox="0 0 200 200">
         <circle class="radar-bg-circle" cx="100" cy="100" r="90" />
@@ -254,22 +257,24 @@
       </div>
     </div>
 
+    <!-- Слоты подарков -->
     <div class="slots-row">
       <div class="slot" id="slot-left" onclick="openDrawer('my')">
-        <div class="slot-art-box" id="slot-left-art">📦</div>
+        <div class="nft-canvas" id="slot-left-art"></div>
         <div class="slot-title" id="slot-left-title">Мой подарок</div>
         <div class="slot-meta" id="slot-left-meta">Нажми для выбора</div>
         <div class="slot-val" id="slot-left-val"></div>
       </div>
 
       <div class="slot" id="slot-right" onclick="openDrawer('target')">
-        <div class="slot-art-box" id="slot-right-art">🎯</div>
+        <div class="nft-canvas" id="slot-right-art"></div>
         <div class="slot-title" id="slot-right-title">Желаемый NFT</div>
         <div class="slot-meta" id="slot-right-meta">Нажми для выбора</div>
         <div class="slot-val" id="slot-right-val"></div>
       </div>
     </div>
 
+    <!-- Множители -->
     <div class="presets-row">
       <div class="preset-btn" onclick="selectPreset('x2', 2)">x2</div>
       <div class="preset-btn" onclick="selectPreset('x4', 4)">x4</div>
@@ -282,6 +287,7 @@
     <button id="btn-boost" class="btn-boost-main" disabled onclick="executeBoost()">Забустить</button>
   </section>
 
+  <!-- ЭКРАН 3: РЕЖИМЫ -->
   <section id="screen-modes" class="screen">
     <div style="display:flex;flex-direction:column;gap:10px;">
       <div class="slot active-slot" style="flex-direction:row;justify-content:space-between;text-align:left;padding:16px;">
@@ -299,6 +305,7 @@
     </div>
   </section>
 
+  <!-- ЭКРАН 4: МАГАЗИН -->
   <section id="screen-shop" class="screen">
     <div class="sheet-tabs" style="margin-bottom:12px;">
       <button class="sheet-tab-btn active" id="tab-shop-tg" onclick="switchShopView('tg')">Обычные Подарки</button>
@@ -307,22 +314,24 @@
     <div id="shop-items-grid" class="sheet-grid" style="grid-template-columns:1fr 1fr;"></div>
   </section>
 
+  <!-- ЭКРАН 5: ПРОФИЛЬ -->
   <section id="screen-profile" class="screen">
+    <!-- АДМИНКА ДЛЯ ID 6894351371 -->
     <div id="admin-panel" class="admin-zone" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <b style="font-size:12px;color:#a78bfa;">⚡ Root Admin Panel</b>
         <span style="font-size:10px;color:var(--text-muted);">ID: 6894351371</span>
       </div>
       <input type="number" id="adm-stars-val" class="admin-inp" placeholder="Количество звёзд ⭐">
-      <button class="btn-boost-main" style="padding:8px;font-size:12px;margin-bottom:10px;" onclick="adminGiveStars()">Выдать звёзды</button>
+      <button class="btn-boost-main" style="padding:9px;font-size:12px;margin-bottom:12px;" onclick="adminGiveStars()">Выдать звёзды</button>
 
-      <div style="border-top:1px solid var(--border);padding-top:10px;">
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
         <select id="adm-nft-model" class="admin-inp"></select>
         <div class="admin-grid">
           <input type="text" id="adm-nft-num" class="admin-inp" placeholder="Номер (напр. 1 или 777)">
           <input type="number" id="adm-nft-cost" class="admin-inp" placeholder="Цена ⭐">
         </div>
-        <button class="btn-boost-main" style="padding:8px;font-size:12px;" onclick="adminMintNFT()">Минт NFT в инвентарь</button>
+        <button class="btn-boost-main" style="padding:9px;font-size:12px;" onclick="adminMintNFT()">Минт NFT в инвентарь</button>
       </div>
     </div>
 
@@ -339,6 +348,7 @@
     <div id="prof-inv-grid" class="sheet-grid"></div>
   </section>
 
+  <!-- ШТОРКА ВЫБОРА -->
   <div id="drawer-box" class="sheet-overlay" onclick="closeDrawer()">
     <div class="sheet-box" onclick="event.stopPropagation()">
       <div class="sheet-tabs">
@@ -349,18 +359,20 @@
     </div>
   </div>
 
+  <!-- ПОБЕДНЫЙ POPUP -->
   <div id="win-modal" class="win-modal">
     <div class="win-glow"></div>
     <div class="win-card">
-      <div class="win-card-art" id="win-art"></div>
-      <b style="font-size:17px;" id="win-title">Победа!</b>
-      <span style="font-size:13px;color:var(--text-muted);margin:4px 0 8px;" id="win-num">#...</span>
+      <div class="nft-canvas" id="win-art"></div>
+      <b style="font-size:18px;" id="win-title">Победа!</b>
+      <span style="font-size:13px;color:var(--text-muted);margin:4px 0 6px;" id="win-num">#...</span>
       <span style="font-size:15px;font-weight:800;color:var(--yellow);margin-bottom:18px;" id="win-val">0 ⭐</span>
       <button class="btn-boost-main" style="margin-bottom:8px;" onclick="closeWinModal(true)">Забустить ещё</button>
       <button class="sheet-tab-btn" style="width:100%;padding:12px;" onclick="closeWinModal(false)">В инвентарь</button>
     </div>
   </div>
 
+  <!-- НАВИГАЦИЯ -->
   <nav class="bottom-bar">
     <button class="nav-item" onclick="navTo('cases', this)">
       <svg viewBox="0 0 24 24"><path d="M19 6h-2V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-8-2h2v2h-2V4zm8 16H5V8h14v12z"/></svg>
@@ -382,7 +394,7 @@
       <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       Профиль
     </button>
-  </nav>
+        </nav>
     <script>
     const MASTER_ID = "6894351371";
 
@@ -401,17 +413,43 @@
     const tg = window.Telegram?.WebApp;
     if (tg) tg.expand();
 
+    // ПОЛНЫЙ ВЕКТОРНЫЙ РЕЕСТР TELEGRAM GIFTS (Аутентичные SVG)
     const ALL_NFT_MODELS = [
-      { key: "dog", name: "Resistance Dog", price: 1200, emoji: "🐶", bg: "linear-gradient(135deg, #0284c7, #082f49)" },
-      { key: "pepe", name: "Plush Pepe", price: 950, emoji: "🐸", bg: "linear-gradient(135deg, #16a34a, #052e16)" },
-      { key: "locket", name: "Heart Locket", price: 1775, emoji: "💖", bg: "linear-gradient(135deg, #ec4899, #500724)" },
-      { key: "box", name: "Berry Box", price: 85, emoji: "📦", bg: "linear-gradient(135deg, #be123c, #4c0519)" },
-      { key: "cap", name: "Durov's Cap", price: 450, emoji: "🧢", bg: "linear-gradient(135deg, #334155, #0f172a)" },
-      { key: "duck", name: "Cyber Duck", price: 340, emoji: "🦆", bg: "linear-gradient(135deg, #eab308, #422006)" },
-      { key: "cup", name: "Golden Cup", price: 600, emoji: "🏆", bg: "linear-gradient(135deg, #d97706, #451a03)" },
-      { key: "ring", name: "Signet Ring", price: 1450, emoji: "💍", bg: "linear-gradient(135deg, #6366f1, #1e1b4b)" },
-      { key: "skull", name: "Electric Skull", price: 2100, emoji: "💀", bg: "linear-gradient(135deg, #8b5cf6, #2e1065)" },
-      { key: "cigar", name: "Vintage Cigar", price: 820, emoji: "🍂", bg: "linear-gradient(135deg, #78350f, #291003)" }
+      {
+        key: "dog", name: "Resistance Dog", price: 1200,
+        bg: "linear-gradient(135deg, #0284c7, #082f49)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><rect width="100" height="100" rx="20" fill="none"/><path d="M30 65 C25 55 25 40 38 32 C42 22 58 22 62 32 C75 40 75 55 70 65 C62 76 38 76 30 65 Z" fill="#ffffff" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"/><path d="M38 46 Q50 36 62 46 Q50 56 38 46" fill="#111827"/><circle cx="44" cy="46" r="3.5" fill="#38bdf8"/><circle cx="56" cy="46" r="3.5" fill="#38bdf8"/><path d="M47 54 Q50 57 53 54" stroke="#111827" stroke-width="2" fill="none"/></svg>`
+      },
+      {
+        key: "pepe", name: "Plush Pepe", price: 950,
+        bg: "linear-gradient(135deg, #16a34a, #052e16)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><ellipse cx="50" cy="52" rx="34" ry="26" fill="#22c55e" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"/><ellipse cx="38" cy="38" rx="10" ry="12" fill="#ffffff"/><circle cx="39" cy="38" r="4.5" fill="#1e293b"/><ellipse cx="62" cy="38" rx="10" ry="12" fill="#ffffff"/><circle cx="61" cy="38" r="4.5" fill="#1e293b"/><path d="M30 56 Q50 68 70 56" stroke="#b91c1c" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`
+      },
+      {
+        key: "locket", name: "Heart Locket", price: 1775,
+        bg: "linear-gradient(135deg, #ec4899, #500724)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><path d="M50 78 L24 50 A18 18 0 0 1 50 26 A18 18 0 0 1 76 50 Z" fill="#fb7185" stroke="#fef08a" stroke-width="4" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.5))"/><circle cx="50" cy="46" r="6" fill="#fef08a"/></svg>`
+      },
+      {
+        key: "box", name: "Berry Box", price: 85,
+        bg: "linear-gradient(135deg, #be123c, #4c0519)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><rect x="22" y="38" width="56" height="42" rx="8" fill="#e11d48" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"/><rect x="18" y="28" width="64" height="14" rx="4" fill="#fb7185"/><rect x="46" y="28" width="8" height="52" fill="#fef08a"/><path d="M42 22 Q50 14 58 22" stroke="#fef08a" stroke-width="4" fill="none"/></svg>`
+      },
+      {
+        key: "cap", name: "Durov's Cap", price: 450,
+        bg: "linear-gradient(135deg, #334155, #0f172a)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><path d="M22 62 C22 36 78 36 78 62 Z" fill="#0f172a" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/><path d="M15 62 Q50 56 85 62 L88 68 Q50 62 12 68 Z" fill="#1e293b"/><circle cx="50" cy="38" r="3" fill="#64748b"/></svg>`
+      },
+      {
+        key: "duck", name: "Cyber Duck", price: 340,
+        bg: "linear-gradient(135deg, #eab308, #422006)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><ellipse cx="46" cy="58" rx="26" ry="20" fill="#facc15" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"/><circle cx="62" cy="40" r="14" fill="#facc15"/><path d="M68 40 Q84 42 74 48 Z" fill="#f97316"/><circle cx="64" cy="36" r="3" fill="#111827"/></svg>`
+      },
+      {
+        key: "skull", name: "Electric Skull", price: 2100,
+        bg: "linear-gradient(135deg, #8b5cf6, #2e1065)",
+        svg: `<svg viewBox="0 0 100 100" width="70%" height="70%"><path d="M30 42 C30 24 70 24 70 42 C70 54 62 60 62 70 L38 70 C38 60 30 54 30 42 Z" fill="#c084fc" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.5))"/><circle cx="42" cy="44" r="6" fill="#1e1b4b"/><circle cx="58" cy="44" r="6" fill="#1e1b4b"/><path d="M46 64 L46 70 M50 64 L50 70 M54 64 L54 70" stroke="#1e1b4b" stroke-width="2.5"/></svg>`
+      }
     ];
 
     let user = {
@@ -421,22 +459,30 @@
       avatar: tg?.initDataUnsafe?.user?.photo_url || "",
       balance: 1000,
       inventory: [
-        { key: "dog", name: "Resistance Dog", number: "#8758", price: 670, emoji: "🐶", bg: "linear-gradient(135deg, #0284c7, #082f49)" }
+        { key: "dog", name: "Resistance Dog", number: "#8758", price: 670, bg: ALL_NFT_MODELS[0].bg, svg: ALL_NFT_MODELS[0].svg }
       ]
     };
 
     let itemLeft = user.inventory[0];
-    let itemRight = { key: "dog", name: "Resistance Dog", number: "#4400", price: 1370, emoji: "🐶", bg: "linear-gradient(135deg, #0284c7, #082f49)" };
+    let itemRight = { key: "dog", name: "Resistance Dog", number: "#4400", price: 1370, bg: ALL_NFT_MODELS[0].bg, svg: ALL_NFT_MODELS[0].svg };
     let boostChance = 44.99;
     const CIRCUMFERENCE = 565.48;
 
     async function initApp() {
+      // Генерация превью на кейсах
+      document.getElementById("case-box-1").innerHTML = ALL_NFT_MODELS[3].svg;
+      document.getElementById("case-box-2").innerHTML = ALL_NFT_MODELS[0].svg;
+
+      // Заполнение селекта админки
       const sel = document.getElementById("adm-nft-model");
       sel.innerHTML = ALL_NFT_MODELS.map(m => `<option value="${m.key}">${m.name} (${m.price} ⭐)</option>`).join("");
 
+      // Проверка Master Admin ID
       if (String(user.id) === MASTER_ID) {
         document.getElementById("admin-panel").style.display = "block";
       }
+
+      renderLiveDrops();
 
       try {
         const doc = await db.collection("users").doc(user.id).get();
@@ -451,6 +497,15 @@
       } catch (e) {
         refreshAllUI();
       }
+    }
+
+    function renderLiveDrops() {
+      const strip = document.getElementById("live-drops-bar");
+      strip.innerHTML = `
+        <div class="live-card"><div class="mini-art" style="background:${ALL_NFT_MODELS[0].bg}">${ALL_NFT_MODELS[0].svg}</div><span>0.82%</span> <b style="color:var(--yellow)">1,200 ⭐</b></div>
+        <div class="live-card"><div class="mini-art" style="background:${ALL_NFT_MODELS[1].bg}">${ALL_NFT_MODELS[1].svg}</div><span>38%</span> <b style="color:var(--yellow)">950 ⭐</b></div>
+        <div class="live-card"><div class="mini-art" style="background:${ALL_NFT_MODELS[3].bg}">${ALL_NFT_MODELS[3].svg}</div><span>55%</span> <b style="color:var(--yellow)">85 ⭐</b></div>
+      `;
     }
 
     async function registerUser() {
@@ -487,9 +542,10 @@
       document.getElementById("prof-tag").innerText = "@" + (user.username || user.id);
       document.getElementById("inv-total-cnt").innerText = user.inventory.length + " шт.";
 
+      // Инвентарь
       document.getElementById("prof-inv-grid").innerHTML = user.inventory.map(it => `
         <div class="slot active-slot" style="min-height:110px;padding:8px;">
-          <div class="slot-art-box" style="width:48px;height:48px;background:${it.bg};font-size:22px;">${it.emoji}</div>
+          <div class="nft-canvas" style="width:48px;height:48px;background:${it.bg};">${it.svg}</div>
           <b style="font-size:11px;">${it.name}</b>
           <span style="font-size:10px;color:var(--text-muted);">${it.number}</span>
           <span style="font-size:11px;color:var(--yellow);font-weight:700;">${it.price} ⭐</span>
@@ -504,14 +560,14 @@
       if (itemLeft) {
         document.getElementById("slot-left").className = "slot active-slot";
         document.getElementById("slot-left-art").style.background = itemLeft.bg;
-        document.getElementById("slot-left-art").innerText = itemLeft.emoji;
+        document.getElementById("slot-left-art").innerHTML = itemLeft.svg;
         document.getElementById("slot-left-title").innerText = itemLeft.name;
         document.getElementById("slot-left-meta").innerText = itemLeft.number;
         document.getElementById("slot-left-val").innerText = itemLeft.price + " ⭐";
       } else {
         document.getElementById("slot-left").className = "slot";
         document.getElementById("slot-left-art").style.background = "transparent";
-        document.getElementById("slot-left-art").innerText = "📦";
+        document.getElementById("slot-left-art").innerHTML = "";
         document.getElementById("slot-left-title").innerText = "Выберите подарок";
         document.getElementById("slot-left-meta").innerText = "для буста";
         document.getElementById("slot-left-val").innerText = "";
@@ -520,7 +576,7 @@
       if (itemRight) {
         document.getElementById("slot-right").className = "slot active-slot";
         document.getElementById("slot-right-art").style.background = itemRight.bg;
-        document.getElementById("slot-right-art").innerText = itemRight.emoji;
+        document.getElementById("slot-right-art").innerHTML = itemRight.svg;
         document.getElementById("slot-right-title").innerText = itemRight.name;
         document.getElementById("slot-right-meta").innerText = itemRight.number;
         document.getElementById("slot-right-val").innerText = itemRight.price + " ⭐";
@@ -604,7 +660,7 @@
     function showWinModal(item) {
       const modal = document.getElementById("win-modal");
       document.getElementById("win-art").style.background = item.bg;
-      document.getElementById("win-art").innerText = item.emoji;
+      document.getElementById("win-art").innerHTML = item.svg;
       document.getElementById("win-title").innerText = item.name;
       document.getElementById("win-num").innerText = item.number;
       document.getElementById("win-val").innerText = item.price + " ⭐";
@@ -641,7 +697,7 @@
 
       grid.innerHTML = list.map((it, idx) => `
         <div class="slot active-slot" style="min-height:100px;padding:8px;" onclick="chooseFromDrawer(${idx})">
-          <div class="slot-art-box" style="width:44px;height:44px;background:${it.bg};font-size:22px;">${it.emoji}</div>
+          <div class="nft-canvas" style="width:44px;height:44px;background:${it.bg};">${it.svg}</div>
           <b style="font-size:11px;">${it.name}</b>
           <span style="font-size:10px;color:var(--text-muted);">${it.number || "#" + Math.floor(1000 + Math.random()*8000)}</span>
           <span style="font-size:11px;color:var(--yellow);font-weight:700;">${it.price} ⭐</span>
@@ -674,11 +730,11 @@
     function renderShopCatalog(tab) {
       const cont = document.getElementById("shop-items-grid");
       if (tab === 'p2p') {
-        cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px;">На P2P рынке пока нет лотов.</div>`;
+        cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px;">На P2P бирже пока нет лотов.</div>`;
       } else {
         cont.innerHTML = ALL_NFT_MODELS.map(m => `
           <div class="slot active-slot" style="min-height:130px;padding:12px;">
-            <div class="slot-art-box" style="background:${m.bg};">${m.emoji}</div>
+            <div class="nft-canvas" style="background:${m.bg};">${m.svg}</div>
             <div class="slot-title">${m.name}</div>
             <div class="slot-val">${m.price} ⭐</div>
             <button class="btn-boost-main" style="padding:6px;font-size:11px;margin-top:6px;" onclick="buyGiftShop('${m.key}')">Купить</button>
@@ -753,8 +809,8 @@
           name: model.name,
           number: "#" + rawNum,
           price: cost || model.price,
-          emoji: model.emoji,
-          bg: model.bg
+          bg: model.bg,
+          svg: model.svg
         };
         user.inventory.unshift(minted);
         refreshAllUI();
